@@ -2,6 +2,7 @@ package com.example.calculatorocr.ui.screen
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,19 +26,53 @@ import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.calculatorocr.BuildConfig
 import com.example.calculatorocr.R
+import com.example.calculatorocr.domain.model.Response
 import com.example.calculatorocr.ui.components.CapturedImage
 import com.example.calculatorocr.ui.components.ResultInfo
 import com.example.calculatorocr.util.createImageFile
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.Objects
 
 @Composable
 fun CalculatorScreen(
     modifier: Modifier = Modifier,
+    flavor: String = BuildConfig.FLAVOR,
     viewModel: CalculatorViewModel = hiltViewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
 
+    if (flavor.contains("filesystem")) {
+        FileSystemCalculatorScreen(
+            modifier = modifier,
+            capturedImageUri = viewModel.capturedImageUri,
+            imageRecognitionResult = viewModel.imageRecognitionResult,
+            coroutineScope = coroutineScope,
+            onImageCaptured = {
+                viewModel.onImageCaptured(it)
+            }
+        )
+    } else {
+        CameraCalculatorScreen(
+            modifier = modifier,
+            capturedImageUri = viewModel.capturedImageUri,
+            imageRecognitionResult = viewModel.imageRecognitionResult,
+            coroutineScope = coroutineScope,
+            onImageCaptured = {
+                viewModel.onImageCaptured(it)
+            }
+        )
+    }
+}
+
+@Composable
+fun CameraCalculatorScreen(
+    modifier: Modifier,
+    capturedImageUri: Uri,
+    imageRecognitionResult: Response<ImageAnalyzingResultUiState>?,
+    coroutineScope: CoroutineScope,
+    onImageCaptured: (Uri) -> Unit
+) {
     val context = LocalContext.current
     val file = context.createImageFile()
     val uri = FileProvider.getUriForFile(
@@ -48,7 +83,7 @@ fun CalculatorScreen(
 
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
         coroutineScope.launch {
-            viewModel.onImageCaptured(uri)
+            onImageCaptured(uri)
         }
     }
 
@@ -71,9 +106,60 @@ fun CalculatorScreen(
         }
     }
 
+    CalculatorScreenContent(
+        modifier = modifier,
+        capturedImageUri = capturedImageUri,
+        imageRecognitionResult = imageRecognitionResult,
+        onGetPhotoButtonClicked = {
+            val permissionCheckResult =
+                ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+            if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                cameraLauncher.launch(uri)
+            } else {
+                // Request a permission
+                permissionLauncher.launch(Manifest.permission.CAMERA)
+            }
+        }
+    )
+}
+
+@Composable
+fun FileSystemCalculatorScreen(
+    modifier: Modifier,
+    capturedImageUri: Uri,
+    imageRecognitionResult: Response<ImageAnalyzingResultUiState>?,
+    coroutineScope: CoroutineScope,
+    onImageCaptured: (Uri) -> Unit
+) {
+    val imageExplorerLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
+            it?.let {
+                coroutineScope.launch {
+                    onImageCaptured(it)
+                }
+            }
+        }
+
+    CalculatorScreenContent(
+        modifier = modifier,
+        capturedImageUri = capturedImageUri,
+        imageRecognitionResult = imageRecognitionResult,
+        onGetPhotoButtonClicked = {
+            imageExplorerLauncher.launch("image/*")
+        }
+    )
+}
+
+@Composable
+fun CalculatorScreenContent(
+    modifier: Modifier,
+    capturedImageUri: Uri,
+    imageRecognitionResult: Response<ImageAnalyzingResultUiState>?,
+    onGetPhotoButtonClicked: () -> Unit
+) {
     Column(modifier = modifier.fillMaxSize()) {
         CapturedImage(
-            imageUri = viewModel.capturedImageUri,
+            imageUri = capturedImageUri,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(16.dp)
@@ -86,23 +172,15 @@ fun CalculatorScreen(
                 .padding(horizontal = 16.dp)
         ) {
             ResultInfo(
-                imageAnalyzingResultUiStateResponse = viewModel.imageRecognitionResult
+                imageAnalyzingResultUiStateResponse = imageRecognitionResult
             )
         }
         Button(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            onClick = {
-                val permissionCheckResult =
-                    ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-                if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-                    cameraLauncher.launch(uri)
-                } else {
-                    // Request a permission
-                    permissionLauncher.launch(Manifest.permission.CAMERA)
-                }
-            }) {
+            onClick = { onGetPhotoButtonClicked() }
+        ) {
             Text(text = stringResource(id = R.string.get_photo))
         }
     }
