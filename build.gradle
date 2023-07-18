@@ -2,7 +2,10 @@
 buildscript {
     ext {
         hilt_version = '2.46.1'
+        hilt_navigation_compose_version = '1.0.0'
         mlkit_text_recognition_version = '16.0.0'
+        coil_version = '2.4.0'
+        kotlinx_coroutines_play_services_version = '1.6.4'
     }
 }
 
