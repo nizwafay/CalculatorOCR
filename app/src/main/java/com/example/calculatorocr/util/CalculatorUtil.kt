@@ -8,11 +8,11 @@ enum class Operator(val value: String) {
     }
 }
 
-private fun findFirstExpression(text: String): String? {
+fun findFirstExpression(text: String): String? {
     return Regex("\\d+[-+/*]\\d+").find(text)?.value
 }
 
-private fun calculateTwoArgumentsOperation(twoArgumentsOperation: String): Float? {
+fun calculateTwoArgumentsOperation(twoArgumentsOperation: String): Float? {
     val splittedExpression: List<String> =
         twoArgumentsOperation.split(Regex("((?<=[-+/*])|(?=[-+/*]))"))
 
@@ -27,11 +27,4 @@ private fun calculateTwoArgumentsOperation(twoArgumentsOperation: String): Float
         else -> null
     }
     return result
-}
-
-fun calculateFirstExpression(text: String): Float? {
-    val firstExpression = findFirstExpression(text)
-    return firstExpression?.let {
-        calculateTwoArgumentsOperation(it)
-    }
 }
