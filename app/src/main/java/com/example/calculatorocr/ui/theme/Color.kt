@@ -2,10 +2,19 @@ package com.example.calculatorocr.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val red_light_primary = Color(0xFFBC1033)
+val red_light_secondary = Color(0xFF775656)
+val red_light_tertiary = Color(0xFF755A2F)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val red_dark_primary = Color(0xFFFFB3B4)
+val red_dark_secondary = Color(0xFFE6BDBC)
+val red_dark_tertiary = Color(0xFFE5C18D)
+
+val green_light_primary = Color(0xFF0D6D35)
+val green_light_secondary = Color(0xFF506352)
+val green_light_tertiary = Color(0xFF39656E)
+
+val green_dark_primary = Color(0xFF83D995)
+val green_dark_secondary = Color(0xFFB7CCB7)
+val green_dark_tertiary = Color(0xFFA2CED8)
+

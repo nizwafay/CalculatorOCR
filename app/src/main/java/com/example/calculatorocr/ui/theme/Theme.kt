@@ -1,57 +1,57 @@
 package com.example.calculatorocr.ui.theme
 
 import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.example.calculatorocr.BuildConfig
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+private val RedDarkColorScheme = darkColorScheme(
+    primary = red_dark_primary,
+    secondary = red_dark_secondary,
+    tertiary = red_dark_tertiary
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+private val RedLightColorScheme = lightColorScheme(
+    primary = red_light_primary,
+    secondary = red_light_secondary,
+    tertiary = red_light_tertiary
+)
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+private val GreenDarkColorScheme = darkColorScheme(
+    primary = green_dark_primary,
+    secondary = green_dark_secondary,
+    tertiary = green_dark_tertiary
+)
+
+private val GreenLightColorScheme = lightColorScheme(
+    primary = green_light_primary,
+    secondary = green_light_secondary,
+    tertiary = green_light_tertiary
 )
 
 @Composable
 fun CalculatorOCRTheme(
+    flavor: String = BuildConfig.FLAVOR,
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        flavor.contains("red") -> {
+            if (darkTheme) RedDarkColorScheme
+            else RedLightColorScheme
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        else -> {
+            if (darkTheme) GreenDarkColorScheme
+            else GreenLightColorScheme
+        }
     }
     val view = LocalView.current
     if (!view.isInEditMode) {

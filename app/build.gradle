@@ -47,6 +47,17 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    flavorDimensions 'themeColor'
+    productFlavors {
+        red {
+            dimension 'themeColor'
+            versionNameSuffix 'red'
+        }
+        green {
+            dimension 'themeColor'
+            versionName 'green'
+        }
+    }
 }
 
 dependencies {
