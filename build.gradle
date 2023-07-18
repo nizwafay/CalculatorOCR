@@ -2,6 +2,7 @@
 buildscript {
     ext {
         hilt_version = '2.46.1'
+        mlkit_text_recognition_version = '16.0.0'
     }
 }
 
