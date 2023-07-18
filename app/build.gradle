@@ -47,15 +47,23 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
-    flavorDimensions 'themeColor'
+    flavorDimensions 'themeColor', 'photoSource'
     productFlavors {
         red {
             dimension 'themeColor'
-            versionNameSuffix 'red'
+            versionName 'red'
         }
         green {
             dimension 'themeColor'
             versionName 'green'
+        }
+        camera {
+            dimension 'photoSource'
+            versionName 'built-in-camera'
+        }
+        filesystem {
+            dimension 'photoSource'
+            versionName 'filesystem'
         }
     }
 }
