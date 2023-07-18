@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CalculatorOCR</string>
+
+    <string name="captured_image">Captured Image</string>
 </resources>
